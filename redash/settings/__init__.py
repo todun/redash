@@ -16,6 +16,7 @@ def all_settings():
 
     return settings
 
+
 REDIS_URL = os.environ.get('REDASH_REDIS_URL', os.environ.get('REDIS_URL', "redis://localhost:6379/0"))
 PROXIES_COUNT = int(os.environ.get('REDASH_PROXIES_COUNT', "1"))
 
@@ -62,13 +63,23 @@ ENFORCE_HTTPS_PERMANENT = parse_boolean(
 ENFORCE_FILE_SAVE = parse_boolean(
     os.environ.get("REDASH_ENFORCE_FILE_SAVE", "true"))
 
+# The secret to use to cookie data verification.
 COOKIE_SECRET = os.environ.get("REDASH_COOKIE_SECRET", SECRET_KEY)
+# Whether to use secure cookies by default.
+COOKIES_SECURE = parse_boolean(
+    os.environ.get("REDASH_COOKIES_SECURE", str(ENFORCE_HTTPS)))
 # Whether the session cookie is set to secure.
 SESSION_COOKIE_SECURE = parse_boolean(
-    os.environ.get("REDASH_SESSION_COOKIE_SECURE") or str(ENFORCE_HTTPS))
+    os.environ.get("REDASH_SESSION_COOKIE_SECURE") or str(COOKIES_SECURE))
 # Whether the session cookie is set HttpOnly.
 SESSION_COOKIE_HTTPONLY = parse_boolean(
     os.environ.get("REDASH_SESSION_COOKIE_HTTPONLY", "true"))
+# Whether the session cookie is set to secure.
+REMEMBER_COOKIE_SECURE = parse_boolean(
+    os.environ.get("REDASH_REMEMBER_COOKIE_SECURE") or str(COOKIES_SECURE))
+# Whether the remember cookie is set HttpOnly.
+REMEMBER_COOKIE_HTTPONLY = parse_boolean(
+    os.environ.get("REDASH_REMEMBER_COOKIE_HTTPONLY", "true"))
 
 # Doesn't set X-Frame-Options by default since it's highly dependent
 # on the specific deployment.
