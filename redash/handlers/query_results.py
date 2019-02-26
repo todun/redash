@@ -203,7 +203,7 @@ class QueryResultResource(BaseResource):
         allow_executing_with_view_only_permissions = query.parameterized.is_safe
 
         if has_access(query.data_source.groups, self.current_user, allow_executing_with_view_only_permissions):
-            return run_query(parameterized_query, parameters, query.data_source, query_id, max_age)
+            return run_query(query.parameterized, parameters, query.data_source, query_id, max_age)
         else:
             return {'job': {'status': 4, 'error': 'You do not have permission to run queries with this data source.'}}, 403
 
