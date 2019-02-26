@@ -95,7 +95,7 @@ def run_query(query, parameters, data_source, query_id, max_age=0):
         else:
             id = current_user.id
             name = current_user.email
-            
+
         job = enqueue_query(query.text, data_source, id, metadata={
             "Username": name,
             "Query ID": query_id
@@ -199,10 +199,8 @@ class QueryResultResource(BaseResource):
         max_age = int(max_age)
 
         query = get_object_or_404(models.Query.get_by_id_and_org, query_id, self.current_org)
-        parameter_schema = query.options.get("parameters", [])
 
-        parameterized_query = ParameterizedQuery(query.query_text, parameter_schema)
-        allow_executing_with_view_only_permissions = parameterized_query.is_safe
+        allow_executing_with_view_only_permissions = query.parameterized.is_safe
 
         if has_access(query.data_source.groups, self.current_user, allow_executing_with_view_only_permissions):
             return run_query(parameterized_query, parameters, query.data_source, query_id, max_age)
