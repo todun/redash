@@ -190,8 +190,13 @@ class QueryResultResource(BaseResource):
                                 any cached result, or executes if not available. Set to zero to
                                 always execute.
         """
-        params = request.values
-        parameters = params.get('parameters', collect_parameters_from_request(params))
+        if request.is_json:
+            params = request.get_json(force=True)
+            parameter_values = params.get('parameters')
+        else:
+            params = request.args
+            parameter_values = collect_parameters_from_request(params)
+
         max_age = params.get('max_age', -1)
         # max_age might have the value of None, in which case calling int(None) will fail
         if max_age is None:
@@ -203,7 +208,7 @@ class QueryResultResource(BaseResource):
         allow_executing_with_view_only_permissions = query.parameterized.is_safe
 
         if has_access(query.data_source.groups, self.current_user, allow_executing_with_view_only_permissions):
-            return run_query(query.parameterized, parameters, query.data_source, query_id, max_age)
+            return run_query(query.parameterized, parameter_values, query.data_source, query_id, max_age)
         else:
             return {'job': {'status': 4, 'error': 'You do not have permission to run queries with this data source.'}}, 403
 
